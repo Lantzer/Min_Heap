@@ -26,7 +26,7 @@ public class Richest {
 
      */
     public static void main(String[] args) {
-        int[] A = new int[11]; //10001 because 1 base indexing
+        int[] A = new int[10001]; //10001 because 1 base indexing
         int heap_size = A.length-1;
         File file = new File(args[0]);
         FileReader fileReader;
@@ -35,15 +35,12 @@ public class Richest {
         try {
             fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
-            for (i = 1; i < 11; i++) {
+            for (i = 1; i < 10001; i++) {
                 line = bufferedReader.readLine();
                 A[i] = Integer.parseInt(line);
                 //System.out.println("Index: " + i + " " + A[i]);
             }
             build_min_heap(A,heap_size);
-            for(int j = 1; j < 11; j++){
-                System.out.println(A[j]);
-            }
             while ((line = bufferedReader.readLine()) != null) {
                 int nextIn = Integer.parseInt(line);
                 if (nextIn > A[1]){
@@ -51,9 +48,26 @@ public class Richest {
                     min_heapify(A,1,heap_size);
                 }
             }
+            min_heapsort(A,heap_size);
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
+        try{
+            FileWriter fw = new FileWriter("richest.output.txt");
+            /*for (i = 10000; i > 0; i--) { //ascending
+                //fw.write(i+": " + A[i]+"\n");
+                fw.write(A[i]+"\n");
+            }*/
+            for (i = 1; i < 10001; i++) {
+                fw.write(A[i]+"\n");
+            }
+
+            fw.close();
+        }catch (Exception e){
+            System.out.println("Filewriter error");
+            e.printStackTrace();
+        }
+
 
     }
     
@@ -62,21 +76,19 @@ public class Richest {
         int left = L(A, i, heap_size);
         int right = R(A, i, heap_size);
         int smallest_index = i;
-        boolean changed = false;
 
         //left is less than i
         if (left != -1 && A[left] < A[i]) {
             smallest_index = left;
-            changed = true;
+
         }
-        //right is less than i
+        //right is less than smallest index
         if (right != -1 && A[right] < A[smallest_index]) {
             smallest_index = right;
-            changed = true;
         }
         //when left or right is the same value as a[i], i stays the same
         //if left or right was smaller than i, swap them and min_heap left or right
-        if (changed) {
+        if (smallest_index != i) {
             swap(A, i, smallest_index);
             min_heapify(A, smallest_index, heap_size);
 
@@ -93,6 +105,14 @@ public class Richest {
     public static void build_min_heap(int[] A, int heap_size) {
         for (int i = A.length / 2; i >= 1; i--) {
             min_heapify(A, i, heap_size);
+        }
+    }
+
+    public static void min_heapsort(int[] A, int heap_size){
+        for (int i = A.length-1; i >= 2; i--){
+            swap(A,1,i);
+            heap_size--;
+            min_heapify(A,1,heap_size);
         }
     }
 
